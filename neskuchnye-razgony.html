@@ -294,16 +294,18 @@ const CLUSTERS = [
       {
         name: "Посадочная страница",
         note: "Tilda · форма регистрации",
-        url:  "https://leads.noboring-finance.ru/razgony"
+        url:  "https://leads.noboring-finance.ru/razgony",
+        editor: "https://tilda.ru/page/?pageid=141726496&projectid=5333645"
       },
       {
         name: "Страница благодарности",
-        note: "Tilda · ссылки на ботов — запросить у Димы Сыромятова",
+        note: "Tilda · выбор мессенджера для подписки",
         url:  "https://leads.noboring-finance.ru/thanksrazgony",
+        editor: "https://tilda.ru/page/?pageid=142045696&projectid=5333645",
         links: [
-          { name: "Бот Telegram" },
-          { name: "Бот ВКонтакте" },
-          { name: "Бот Max" },
+          { name: "Бот Telegram", url: "https://t.me/nfconf_bot?start=razgon" },
+          { name: "Бот ВКонтакте", url: "https://s.salebot.pro/1e93ecb2e68406bf41e8df61f7f809ab_0_f" },
+          { name: "Бот Max", url: "https://max.ru/id7453354145_2_bot?start=razgon" },
         ]
       },
     ]
@@ -400,9 +402,31 @@ function render() {
     const cards = document.createElement('div');
     cards.className = 'cards';
 
-    items.forEach(({ name, note, url, text, links }) => {
+    items.forEach(({ name, note, url, text, editor, links }) => {
       const card = document.createElement('div');
       card.className = 'card';
+
+      // Если есть поле editor — показываем url и editor как именованные блоки
+      const mainHtml = text !== undefined
+        ? `<div class="card-text">${text}</div>`
+        : editor !== undefined
+          ? `
+            <div class="sublink" style="border-top:none; padding-top:0; margin-top:6px;">
+              <span class="sublink-name">Страница</span>
+              ${url
+                ? `<a class="card-link" href="${url}" target="_blank" rel="noopener">${url}</a>`
+                : `<div class="empty">ссылка не добавлена</div>`}
+            </div>
+            <div class="sublink">
+              <span class="sublink-name">Редактор</span>
+              ${editor
+                ? `<a class="card-link" href="${editor}" target="_blank" rel="noopener">${editor}</a>`
+                : `<div class="empty">ссылка не добавлена</div>`}
+            </div>
+          `
+          : url
+            ? `<a class="card-link" href="${url}" target="_blank" rel="noopener">${url}</a>`
+            : `<div class="empty">ссылка не добавлена</div>`;
 
       let linksHtml = '';
       if (links && links.length) {
@@ -420,12 +444,7 @@ function render() {
       card.innerHTML = `
         <div class="card-name">${name}</div>
         ${note ? `<div class="card-note">${note}</div>` : ''}
-        ${text !== undefined
-          ? `<div class="card-text">${text}</div>`
-          : url
-            ? `<a class="card-link" href="${url}" target="_blank" rel="noopener">${url}</a>`
-            : `<div class="empty">ссылка не добавлена</div>`
-        }
+        ${mainHtml}
         ${linksHtml}
       `;
       cards.appendChild(card);
