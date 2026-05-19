@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Нескучные разгоны · Дашборд</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    #gate {
+      position: fixed; inset: 0;
+      background: #1a1a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .gate-box {
+      background: #fff;
+      border-radius: 14px;
+      padding: 36px 40px;
+      width: 320px;
+      text-align: center;
+    }
+
+    .gate-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 6px;
+    }
+
+    .gate-sub {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 24px;
+    }
+
+    .gate-input {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 18px;
+      letter-spacing: 4px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      outline: none;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .gate-input:focus { border-color: #4a6cf7; }
+
+    .gate-btn {
+      width: 100%;
+      padding: 10px;
+      background: #1a1a2e;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .gate-btn:hover { background: #2d2d4e; }
+
+    .gate-error {
+      font-size: 12px;
+      color: #e74c3c;
+      margin-top: 8px;
+      min-height: 16px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      color: #1a1a2e;
+      padding: 32px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── Шапка мероприятия ── */
+    .event-header {
+      background: #1a1a2e;
+      color: #fff;
+      border-radius: 14px;
+      padding: 24px 28px;
+      margin-bottom: 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .event-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 2px solid rgba(255,255,255,0.3);
+      padding-bottom: 2px;
+      transition: border-color 0.15s;
+    }
+
+    .event-title:hover {
+      border-bottom-color: rgba(255,255,255,0.9);
+    }
+
+    .event-meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .event-badge {
+      font-size: 12px;
+      background: rgba(255,255,255,0.12);
+      padding: 5px 12px;
+      border-radius: 20px;
+      color: rgba(255,255,255,0.85);
+    }
+
+    /* ── Кластеры ── */
+    .cluster {
+      margin-bottom: 28px;
+    }
+
+    .cluster-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #888;
+      margin-bottom: 10px;
+      padding-left: 2px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+    }
+
+    /* ── Карточка ── */
+    .card {
+      background: #fff;
+      border: 1px solid #e8eaed;
+      border-radius: 10px;
+      padding: 14px 16px;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border-color: #c8cacd;
+    }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+
+    .card-note {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .card-link {
+      display: block;
+      font-size: 11.5px;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      color: #4a6cf7;
+      text-decoration: none;
+      word-break: break-all;
+      line-height: 1.5;
+      padding: 6px 10px;
+      background: #f5f7ff;
+      border-radius: 6px;
+      border: 1px solid #e0e5ff;
+      margin-top: 4px;
+    }
+
+    .card-link:hover {
+      background: #eaedff;
+      text-decoration: underline;
+    }
+
+    .card-link::before {
+      content: '↗  ';
+      opacity: 0.4;
+    }
+
+    .sublink {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .sublink-name {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 3px;
+    }
+
+    .empty {
+      font-size: 11px;
+      color: #bbb;
+      font-style: italic;
+      padding: 6px 10px;
+      background: #fafafa;
+      border-radius: 6px;
+      border: 1px dashed #e0e0e0;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-title">Нескучные разгоны</div>
+    <div class="gate-sub">Введите пароль для доступа</div>
+    <input class="gate-input" id="pwd" type="password" placeholder="·····" maxlength="10" autofocus />
+    <button class="gate-btn" onclick="checkPwd()">Войти</button>
+    <div class="gate-error" id="gate-err"></div>
+  </div>
+</div>
+
+<div id="root"></div>
+
+<script>
+// ── Пароль ──
+const PWD = '13022';
+
+function checkPwd() {
+  const val = document.getElementById('pwd').value;
+  if (val === PWD) {
+    sessionStorage.setItem('nf_auth', '1');
+    document.getElementById('gate').style.display = 'none';
+  } else {
+    document.getElementById('gate-err').textContent = 'Неверный пароль';
+    document.getElementById('pwd').value = '';
+    document.getElementById('pwd').focus();
+  }
+}
+
+document.getElementById('pwd').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPwd();
+});
+
+if (sessionStorage.getItem('nf_auth') === '1') {
+  document.getElementById('gate').style.display = 'none';
+}
+
+// ══════════════════════════════════════════════
+//  КОНФИГ МЕРОПРИЯТИЯ
+// ══════════════════════════════════════════════
+const EVENT = {
+  title:    "Нескучные разгоны",
+  date:     "4 июня 2026",
+  time:     "17:00 МСК",
+  type:     "Бесплатный вебинар",
+  platform: "Bizon365",
+};
+
+// ══════════════════════════════════════════════
+//  КЛАСТЕРЫ — добавляй/редактируй здесь
+//  url: "" или отсутствует — покажет "не добавлена"
+// ══════════════════════════════════════════════
+const CLUSTERS = [
+
+  {
+    title: "Регистрация",
+    items: [
+      {
+        name: "Посадочная страница",
+        note: "Tilda · форма регистрации",
+        url:  "https://leads.noboring-finance.ru/razgony"
+      },
+      {
+        name: "Страница благодарности",
+        note: "Tilda · ссылки на ботов — запросить у Димы Сыромятова",
+        url:  "https://leads.noboring-finance.ru/thanksrazgony",
+        links: [
+          { name: "Бот Telegram" },
+          { name: "Бот ВКонтакте" },
+          { name: "Бот Max" },
+        ]
+      },
+    ]
+  },
+
+  {
+    title: "Интеграции",
+    items: [
+      {
+        name: "Связка Tilda → Битрикс24",
+        note: "Albato",
+      },
+    ]
+  },
+
+  {
+    title: "Аналитика",
+    items: [
+      {
+        name: "Цель регистрации",
+        note: "Яндекс.Метрика",
+      },
+      {
+        name: "Таблица аналитики",
+        note: "Google Sheets",
+      },
+    ]
+  },
+
+  {
+    title: "Рассылки",
+    items: [
+      {
+        name: "Кампания · подтверждение регистрации",
+        note: "Sendsay · название списка — запросить у Никиты Дудина",
+      },
+    ]
+  },
+
+  {
+    title: "CRM",
+    items: [
+      {
+        name: "Воронка · Бесплатные мероприятия",
+        note: "Битрикс24",
+      },
+    ]
+  },
+
+  {
+    title: "Площадка проведения",
+    items: [
+      {
+        name: "Вебинарная комната",
+        note: "Bizon365",
+      },
+    ]
+  },
+
+];
+// ══════════════════════════════════════════════
+
+function render() {
+  const root = document.getElementById('root');
+
+  // Шапка
+  root.innerHTML = `
+    <div class="event-header">
+      <a class="event-title" href="file:///c:/Проекты%20ИИ/NF%20Project/neskuchnye-razgony.html" title="file:///c:/Проекты%20ИИ/NF%20Project/neskuchnye-razgony.html">${EVENT.title}</a>
+      <div class="event-meta">
+        <span class="event-badge">📅 ${EVENT.date}, ${EVENT.time}</span>
+        <span class="event-badge">🎥 ${EVENT.platform}</span>
+        <span class="event-badge">🆓 ${EVENT.type}</span>
+      </div>
+    </div>
+  `;
+
+  // Кластеры
+  CLUSTERS.forEach(({ title, items }) => {
+    const cluster = document.createElement('div');
+    cluster.className = 'cluster';
+
+    const t = document.createElement('div');
+    t.className = 'cluster-title';
+    t.textContent = title;
+    cluster.appendChild(t);
+
+    const cards = document.createElement('div');
+    cards.className = 'cards';
+
+    items.forEach(({ name, note, url, links }) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      let linksHtml = '';
+      if (links && links.length) {
+        linksHtml = links.map(l => `
+          <div class="sublink">
+            <span class="sublink-name">${l.name}</span>
+            ${l.url
+              ? `<a class="card-link" href="${l.url}" target="_blank" rel="noopener">${l.url}</a>`
+              : `<div class="empty">ссылка не добавлена</div>`
+            }
+          </div>
+        `).join('');
+      }
+
+      card.innerHTML = `
+        <div class="card-name">${name}</div>
+        ${note ? `<div class="card-note">${note}</div>` : ''}
+        ${url
+          ? `<a class="card-link" href="${url}" target="_blank" rel="noopener">${url}</a>`
+          : `<div class="empty">ссылка не добавлена</div>`
+        }
+        ${linksHtml}
+      `;
+      cards.appendChild(card);
+    });
+
+    cluster.appendChild(cards);
+    root.appendChild(cluster);
+  });
+}
+
+render();
+</script>
+</body>
+</html>
